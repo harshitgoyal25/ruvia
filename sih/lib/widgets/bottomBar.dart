@@ -23,14 +23,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 111, 172, 161),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
+        color: const Color.fromARGB(255, 13, 15, 12),
+        // borderRadius: const BorderRadius.only(
+        //   topLeft: Radius.circular(20),
+        //   topRight: Radius.circular(20),
+        // ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: const Color.fromARGB(255, 180, 176, 176).withOpacity(0.15),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -80,7 +80,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
               duration: const Duration(milliseconds: 250),
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white24 : Colors.transparent,
+                color: isSelected
+                    ? const Color.fromARGB(255, 99, 227, 82)
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(

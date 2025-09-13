@@ -60,15 +60,22 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 111, 172, 161),
+        backgroundColor: const Color.fromARGB(255, 13, 15, 12),
         elevation: 3,
         title: const Text(
           "Ruvia",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            color: Color.fromARGB(255, 99, 227, 82),
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.white),
+          icon: const Icon(
+            Icons.notifications,
+            color: Color.fromARGB(255, 99, 227, 82),
+          ),
           onPressed: () {
             // TODO: handle notification tap
           },

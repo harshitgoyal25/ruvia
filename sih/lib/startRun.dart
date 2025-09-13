@@ -3,7 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
+
+import 'widgets/floating_profile_button.dart';
 
 class StartRunPage extends StatefulWidget {
   const StartRunPage({super.key});
@@ -157,6 +160,38 @@ class _StartRunPageState extends State<StartRunPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 13, 15, 12),
+        elevation: 3,
+        title: const Text(
+          "Ruvia",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            color: Color.fromARGB(255, 99, 227, 82),
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.notifications,
+            color: Color.fromARGB(255, 99, 227, 82),
+          ),
+          onPressed: () {
+            // TODO: handle notification tap
+          },
+        ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: FloatingProfileButton(
+              userName: "Harsh Kumar",
+              avatarImage: "assets/avator.png",
+            ),
+          ),
+        ],
+      ),
       body: _currentPosition == null
           ? const Center(child: CircularProgressIndicator())
           : Stack(
@@ -230,7 +265,7 @@ class _StartRunPageState extends State<StartRunPage> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    color: Colors.white,
+                    color: const Color.fromARGB(255, 13, 15, 12),
                     padding: const EdgeInsets.symmetric(
                       vertical: 16,
                       horizontal: 24,
@@ -315,8 +350,13 @@ class _StartRunPageState extends State<StartRunPage> {
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
+
         const SizedBox(height: 4),
         Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
       ],
@@ -341,6 +381,7 @@ class _StartRunPageState extends State<StartRunPage> {
           fontSize: 16,
           fontWeight: FontWeight.bold,
           color: textColor,
+          fontFamily: GoogleFonts.montserrat().fontFamily,
         ),
       ),
     );

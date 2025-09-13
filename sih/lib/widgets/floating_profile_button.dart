@@ -20,14 +20,16 @@ class FloatingProfileButton extends StatelessWidget {
           heightFactor: 0.85,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              color: Colors.black,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 15,
-                  spreadRadius: 5,
-                  offset: Offset(0, -3),
+                  color: Colors.black54,
+                  blurRadius: 20,
+                  spreadRadius: 6,
+                  offset: const Offset(0, -3),
                 ),
               ],
             ),
@@ -40,7 +42,7 @@ class FloatingProfileButton extends StatelessWidget {
                   height: 5,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: Colors.grey[700],
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -48,9 +50,13 @@ class FloatingProfileButton extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 32,
-                      backgroundImage: AssetImage(avatarImage),
+                    ClipOval(
+                      child: Image.asset(
+                        avatarImage,
+                        width: 64, // 2 × radius
+                        height: 64,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -59,7 +65,7 @@ class FloatingProfileButton extends StatelessWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 22,
-                          color: Colors.black87,
+                          color: Colors.white,
                           letterSpacing: 0.3,
                         ),
                       ),
@@ -69,7 +75,7 @@ class FloatingProfileButton extends StatelessWidget {
                         // TODO: Implement view profile navigation
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.black54),
+                        side: const BorderSide(color: Colors.green),
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 18,
@@ -79,7 +85,7 @@ class FloatingProfileButton extends StatelessWidget {
                       child: const Text(
                         'View Profile',
                         style: TextStyle(
-                          color: Colors.black87,
+                          color: Colors.green,
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           letterSpacing: 0.4,
@@ -96,7 +102,7 @@ class FloatingProfileButton extends StatelessWidget {
                     itemCount: _profileOptions.length,
                     separatorBuilder: (context, index) => Divider(
                       height: 1,
-                      color: Colors.grey[300],
+                      color: Colors.grey[800],
                       indent: 70,
                       endIndent: 20,
                     ),
@@ -105,13 +111,13 @@ class FloatingProfileButton extends StatelessWidget {
                       return ListTile(
                         leading: Icon(
                           option.icon,
-                          color: Colors.black87,
+                          color: Colors.green,
                           size: 22,
                         ),
                         title: Text(
                           option.text,
                           style: const TextStyle(
-                            color: Colors.black87,
+                            color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                           ),
@@ -119,16 +125,12 @@ class FloatingProfileButton extends StatelessWidget {
                         trailing: const Icon(
                           Icons.arrow_forward_ios,
                           size: 16,
-                          color: Colors.black38,
+                          color: Colors.grey,
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                         ),
-                        onTap:
-                            option.onTap ??
-                            () {
-                              // Default empty tap
-                            },
+                        onTap: option.onTap ?? () {},
                       );
                     },
                   ),
@@ -142,7 +144,7 @@ class FloatingProfileButton extends StatelessWidget {
                       // TODO: Implement sign out logic
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal[700],
+                      backgroundColor: Colors.green,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -154,7 +156,7 @@ class FloatingProfileButton extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -167,18 +169,18 @@ class FloatingProfileButton extends StatelessWidget {
                       // TODO: Implement restore purchases logic
                     },
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade400),
+                      side: const BorderSide(color: Colors.green),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "Restore Purchases",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        color: Colors.green,
                       ),
                     ),
                   ),
@@ -188,10 +190,10 @@ class FloatingProfileButton extends StatelessWidget {
                   onPressed: () {
                     // TODO: Implement delete account logic
                   },
-                  child: Text(
+                  child: const Text(
                     "Delete Account",
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: Colors.redAccent,
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.w500,
                     ),
@@ -214,9 +216,13 @@ class FloatingProfileButton extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(28),
         onTap: () => _showProfileSheet(context),
-        child: CircleAvatar(
-          radius: 22,
-          backgroundImage: AssetImage(avatarImage),
+        child: ClipOval(
+          child: Image.asset(
+            avatarImage,
+            width: 44, // size same as CircleAvatar (2 × radius)
+            height: 44,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
@@ -232,60 +238,12 @@ class ProfileOption {
 }
 
 final List<ProfileOption> _profileOptions = [
-  ProfileOption(
-    icon: Icons.edit,
-    text: "Edit Profile",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.settings,
-    text: "App Settings",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.privacy_tip,
-    text: "Privacy",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.credit_card,
-    text: "Plans & Purchases",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.link,
-    text: "Integrations",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.help,
-    text: "FAQs",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.support,
-    text: "Support",
-    onTap: () {
-      /* TODO */
-    },
-  ),
-  ProfileOption(
-    icon: Icons.list_alt,
-    text: "App Change Log",
-    onTap: () {
-      /* TODO */
-    },
-  ),
+  ProfileOption(icon: Icons.edit, text: "Edit Profile"),
+  ProfileOption(icon: Icons.settings, text: "App Settings"),
+  ProfileOption(icon: Icons.privacy_tip, text: "Privacy"),
+  ProfileOption(icon: Icons.credit_card, text: "Plans & Purchases"),
+  ProfileOption(icon: Icons.link, text: "Integrations"),
+  ProfileOption(icon: Icons.help, text: "FAQs"),
+  ProfileOption(icon: Icons.support, text: "Support"),
+  ProfileOption(icon: Icons.list_alt, text: "App Change Log"),
 ];

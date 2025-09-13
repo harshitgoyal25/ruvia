@@ -2,25 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class CreateAccountScreen extends StatefulWidget {
+  const CreateAccountScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<CreateAccountScreen> createState() => _CreateAccountScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _CreateAccountScreenState extends State<CreateAccountScreen> {
+  final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool isLoading = false;
 
-  void handleSignIn() async {
+  void handleSignUp() async {
+    final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter both email and password')),
+        const SnackBar(content: Text('Please fill all fields')),
       );
       return;
     }
@@ -29,14 +31,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // Optionally update display name
+      await userCredential.user?.updateDisplayName(fullName);
 
       if (userCredential.user != null) {
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/login');
       }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign in failed: ${e.message ?? 'Unknown'}')),
+        SnackBar(content: Text('Sign up failed: ${e.message ?? 'Unknown'}')),
       );
     } catch (e) {
       ScaffoldMessenger.of(
@@ -63,17 +68,28 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
-                  Image.asset('assets/LOGO.png', height: 120),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Welcome to',
-                    style: TextStyle(fontSize: 25, color: Colors.white70),
+                  const SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Text(
+                        "< BACK",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: 30),
+                  Image.asset('assets/LOGO.png', height: 100),
+                  const SizedBox(height: 16),
                   Text(
-                    'RUVIA',
+                    'Get Started',
                     style: GoogleFonts.montserrat(
-                      fontSize: 66,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: green,
                     ),
@@ -90,6 +106,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.all(24),
                       child: Column(
                         children: [
+                          TextField(
+                            controller: fullNameController,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              labelText: 'Full Name',
+                              labelStyle: const TextStyle(
+                                color: Colors.white70,
+                              ),
+                              hintText: 'John Doe',
+                              hintStyle: const TextStyle(color: Colors.white54),
+                              filled: true,
+                              fillColor: Colors.black.withOpacity(0.6),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
                           TextField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -143,13 +178,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   vertical: 14,
                                 ),
                               ),
-                              onPressed: isLoading ? null : handleSignIn,
+                              onPressed: isLoading ? null : handleSignUp,
                               child: isLoading
                                   ? const CircularProgressIndicator(
                                       color: Colors.black,
                                     )
                                   : const Text(
-                                      'Sign In',
+                                      'Create Account',
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
@@ -168,39 +203,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextSpan(
                       children: [
                         const TextSpan(
-                          text: "Don't have an account? ",
+                          text: "Already have an account? ",
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         WidgetSpan(
                           child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/create');
-                            },
+                            onTap: () =>
+                                Navigator.pushReplacementNamed(context, '/login'),
                             child: Text(
-                              "Sign up",
+                              "Sign In",
                               style: TextStyle(
                                 color: green,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                                 decoration: TextDecoration.underline,
                               ),
-                              // Add navigation to '/create'
                             ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Text(
-                      'Forgot password?',
-                      style: TextStyle(
-                        color: green,
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                      ),
                     ),
                   ),
                   const SizedBox(height: 32),

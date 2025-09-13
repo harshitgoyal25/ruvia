@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'widgets/bottomBar.dart';
 import 'widgets/floating_profile_button.dart';
 
@@ -48,15 +49,22 @@ class _MePageState extends State<MePage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 111, 172, 161),
+        backgroundColor: const Color.fromARGB(255, 13, 15, 12),
         elevation: 3,
         title: const Text(
           "Ruvia",
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            color: Color.fromARGB(255, 99, 227, 82),
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.white),
+          icon: const Icon(
+            Icons.notifications,
+            color: Color.fromARGB(255, 99, 227, 82),
+          ),
           onPressed: () {
             // TODO: handle notification tap
           },
@@ -75,29 +83,11 @@ class _MePageState extends State<MePage> {
       body: Stack(
         children: [
           // Background image
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: const AssetImage('assets/runner.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  const Color.fromARGB(255, 255, 255, 255).withOpacity(0),
-                  BlendMode.darken,
-                ),
-              ),
-            ),
-          ),
+          Container(decoration: BoxDecoration()),
           // Gradient overlay
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  const Color(0xFF43e97b).withOpacity(0.5),
-                  const Color(0xFF38f9d7).withOpacity(0.6),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: const Color.fromARGB(255, 14, 14, 15).withOpacity(1),
             ),
           ),
           // Content
@@ -109,14 +99,14 @@ class _MePageState extends State<MePage> {
                 children: [
                   // Level card
                   Card(
-                    color: Colors.white.withOpacity(0.85),
+                    color: const Color(0xFF27272A).withOpacity(0.5),
                     elevation: 6,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.teal,
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: const Color(0xFF79c339),
                         child: Icon(
                           Icons.directions_run,
                           color: Colors.white,
@@ -125,15 +115,22 @@ class _MePageState extends State<MePage> {
                       ),
                       title: Text(
                         'Level 1',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontFamily: GoogleFonts.montserrat().fontFamily,
+                        ),
                       ),
                       subtitle: Text(
                         '102XP to next level',
-                        style: TextStyle(color: Colors.black54),
+                        style: TextStyle(
+                          color: const Color(0xFF79c339),
+                          fontFamily: GoogleFonts.montserrat().fontFamily,
+                        ),
                       ),
-                      trailing: Icon(
+                      trailing: const Icon(
                         Icons.arrow_forward_ios,
-                        color: Colors.teal,
+                        color: Color.fromARGB(255, 254, 255, 255),
                       ),
                     ),
                   ),
@@ -141,7 +138,7 @@ class _MePageState extends State<MePage> {
 
                   // XP Challenges
                   Card(
-                    color: Colors.white.withOpacity(0.80),
+                    color: const Color(0xFF27272A).withOpacity(0.5),
                     elevation: 3,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -150,16 +147,17 @@ class _MePageState extends State<MePage> {
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             'XP Challenges',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.teal,
+                              fontFamily: GoogleFonts.montserrat().fontFamily,
+                              color: const Color.fromARGB(255, 255, 255, 255),
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Row(
+                          const SizedBox(height: 10),
+                          const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _ChallengeCard(
@@ -187,8 +185,7 @@ class _MePageState extends State<MePage> {
 
                   // Competitions
                   Card(
-                    color: Colors.white.withOpacity(0.85),
-                    elevation: 4,
+                    color: const Color(0xFF27272A).withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                     ),
@@ -197,19 +194,22 @@ class _MePageState extends State<MePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Competitions',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.teal,
+                              fontFamily: GoogleFonts.montserrat().fontFamily,
+                              color: const Color.fromARGB(255, 255, 255, 255),
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Terra Comp 25.7 | \$2,988 AUD in Prizes',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
+                              fontFamily: GoogleFonts.montserrat().fontFamily,
+                              color: const Color(0xFF79c339),
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -229,7 +229,7 @@ class _MePageState extends State<MePage> {
                           const SizedBox(height: 12),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
+                              backgroundColor: Color(0xFF79c339),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(14),
@@ -239,7 +239,7 @@ class _MePageState extends State<MePage> {
                             child: const Text(
                               'View competition',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.white,
                               ),
                             ),
@@ -253,7 +253,7 @@ class _MePageState extends State<MePage> {
 
                   // Local Battle
                   Card(
-                    color: Colors.white.withOpacity(0.85),
+                    color: const Color(0xFF27272A).withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(22),
                     ),
@@ -265,24 +265,24 @@ class _MePageState extends State<MePage> {
                       child: ListTile(
                         leading: const Icon(
                           Icons.sports_kabaddi,
-                          color: Colors.black,
+                          color: Color.fromARGB(255, 255, 255, 255),
                         ),
                         title: const Text(
                           'Local Battle',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Color.fromARGB(221, 255, 255, 255),
                             // Navigator.pushNamed(context, '/localBattle'); // Uncomment to navigate on tap
                           ),
                         ),
                         subtitle: const Text(
                           'Find nearby runners to compete!',
-                          style: TextStyle(color: Colors.black54),
+                          style: TextStyle(color: Color(0xFF79c339)),
                         ),
                         trailing: const Icon(
                           Icons.arrow_forward_ios,
                           size: 16,
-                          color: Colors.black54,
+                          color: Color.fromARGB(202, 255, 255, 255),
                         ),
                         onTap: () {
                           Navigator.pushNamed(context, '/localBattle');
@@ -294,7 +294,7 @@ class _MePageState extends State<MePage> {
 
                   // Join/Create Club
                   Card(
-                    color: Colors.white.withOpacity(0.85),
+                    color: const Color(0xFF27272A).withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(22),
                     ),
@@ -308,7 +308,9 @@ class _MePageState extends State<MePage> {
                               Navigator.pushNamed(context, '/joinClub');
                             },
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.black),
+                              side: const BorderSide(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(14),
@@ -319,15 +321,20 @@ class _MePageState extends State<MePage> {
                                 vertical: 14,
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               "Join a Club",
-                              style: TextStyle(color: Colors.black87),
+                              style: TextStyle(
+                                color: const Color.fromARGB(221, 255, 255, 255),
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
+                              ),
                             ),
                           ),
                           OutlinedButton(
                             onPressed: null, // Disabled
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.black87),
+                              side: const BorderSide(
+                                color: Color.fromARGB(221, 255, 255, 255),
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(14),
@@ -338,9 +345,12 @@ class _MePageState extends State<MePage> {
                                 vertical: 14,
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               "Create Your Own Club",
-                              style: TextStyle(color: Colors.black87),
+                              style: TextStyle(
+                                color: const Color.fromARGB(221, 255, 255, 255),
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
+                              ),
                             ),
                           ),
                         ],
@@ -350,46 +360,44 @@ class _MePageState extends State<MePage> {
                   const SizedBox(height: 20),
 
                   // Insights
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 24,
+                  Card(
+                    color: const Color(0xFF27272A).withOpacity(0.5),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 24,
                       ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 60,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(22),
-                          onTap: () {
-                            Navigator.pushNamed(context, '/insights');
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Text(
-                                "Insights:",
-                                style: TextStyle(
-                                  color: Colors.black,
-
-                                  fontWeight: FontWeight.bold,
-                                ),
-
-                                // Navigate to Insights page on tap
-                                // Already handled by InkWell's onTap above
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/insights');
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Insights:",
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                fontWeight: FontWeight.bold,
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
                               ),
-                              SizedBox(width: 14),
-                              Icon(Icons.stars, color: Colors.amberAccent),
-                              SizedBox(width: 10),
-                              Text(
-                                "Achievements / Stats",
-                                style: TextStyle(color: Colors.black),
+                            ),
+                            const SizedBox(width: 14),
+                            const Icon(Icons.stars, color: Color(0xFF79c339)),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Achievements / Stats",
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                fontFamily: GoogleFonts.montserrat().fontFamily,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -425,18 +433,26 @@ class _ChallengeCard extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          backgroundColor: Colors.teal,
+          backgroundColor: Color(0xFF79c339),
           child: Icon(icon, color: Colors.white),
         ),
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            color: const Color.fromARGB(255, 255, 255, 255),
+          ),
         ),
         const SizedBox(height: 2),
         Text(
           '+$xp XP',
-          style: const TextStyle(fontSize: 11, color: Colors.green),
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.green,
+            fontFamily: GoogleFonts.montserrat().fontFamily,
+          ),
         ),
       ],
     );
@@ -454,20 +470,27 @@ class _CompetitionCard extends StatelessWidget {
       width: 110,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.teal.withOpacity(0.2),
+        color: Color(0xFF79c339).withOpacity(0.8),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         children: [
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            style: const TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 7),
           Text(
             time,
-            style: const TextStyle(fontSize: 11, color: Colors.black54),
+            style: const TextStyle(
+              fontSize: 11,
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
           ),
         ],
       ),
