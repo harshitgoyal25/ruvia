@@ -1,0 +1,41 @@
+name: sih
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_map: ^6.0.0          # 2D mapping (OpenStreetMap)
+  latlong2: ^0.9.0             # LatLng type for flutter_map
+  geolocator: ^14.0.2          # Live GPS location fetching
+  flutter_earth_globe: ^1.0.5  # 3D globe visualization
+  google_sign_in: ^6.1.5
+  supabase_flutter: ^2.10.0    # Backend services (optional, remove if unused)
+  
+  
+  # Remove google_maps_flutter and location packages if not used, since flutter_map + geolocator suffices
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/login_bg.png
+    - assets/google_icon.png
+    - assets/avator.png
+    - assets/runner.jpg
+  fonts:
+    - family: LogoFont
+      fonts:
+        - asset: assets/fonts/logo.ttf
+    - family: GameFont
+      fonts:
+        - asset: assets/fonts/game.ttf
