@@ -40,7 +40,7 @@ class _MePageState extends State<MePage> {
         ),
       );
     } else if (index == 3) {
-      // Navigator.pushNamed(context, '/start-run');
+      Navigator.pushNamed(context, '/start-run');
     }
   }
 
@@ -73,7 +73,7 @@ class _MePageState extends State<MePage> {
           Padding(
             padding: EdgeInsets.only(right: 12),
             child: FloatingProfileButton(
-              userName: "Harsh Kumar",
+              
               avatarImage: "assets/avator.png",
             ),
           ),
@@ -285,7 +285,7 @@ class _MePageState extends State<MePage> {
                           color: Color.fromARGB(202, 255, 255, 255),
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/localBattle');
+                          // Navigator.pushNamed(context, '/localBattle');
                         },
                       ),
                     ),
@@ -305,7 +305,7 @@ class _MePageState extends State<MePage> {
                         children: [
                           OutlinedButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/joinClub');
+                              // Navigator.pushNamed(context, '/joinClub');
                             },
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(

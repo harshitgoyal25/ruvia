@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CreateAccountScreen extends StatefulWidget {
@@ -21,9 +22,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final password = passwordController.text.trim();
 
     if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
 
@@ -33,10 +34,28 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // Optionally update display name
       await userCredential.user?.updateDisplayName(fullName);
 
       if (userCredential.user != null) {
+        // Generate a random color for the user
+        String userColor = getRandomColor();
+
+        // Save user's details in Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+              'name': fullName,
+              'email': email,
+              'phoneNumber': '', // You can add a phone number input if needed
+              'runCount': 0,
+              'color': userColor,
+              'createdAt': FieldValue.serverTimestamp(),
+              'lastActive': FieldValue.serverTimestamp(),
+              'totalDistance': 0.0,
+              'totalArea': 0.0,
+            });
+
         Navigator.pushReplacementNamed(context, '/login');
       }
     } on FirebaseAuthException catch (e) {
@@ -50,6 +69,22 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
+  }
+
+  // Random color generator function
+  String getRandomColor() {
+    List<String> colors = [
+      '#2F8C5D',
+      '#8D4640',
+      '#0F3A88',
+      '#8E7E30',
+      '#733389',
+      '#7B7F8A',
+      '#8D4E25',
+      '#587F7A',
+    ];
+    colors.shuffle();
+    return colors.first;
   }
 
   @override
@@ -95,8 +130,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-
-                  // Glassmorphic card
                   Card(
                     color: Colors.grey.withOpacity(0.3),
                     shape: RoundedRectangleBorder(
@@ -197,7 +230,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
                   Text.rich(
                     TextSpan(
@@ -208,8 +240,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         ),
                         WidgetSpan(
                           child: GestureDetector(
-                            onTap: () =>
-                                Navigator.pushReplacementNamed(context, '/login'),
+                            onTap: () => Navigator.pushReplacementNamed(
+                              context,
+                              '/login',
+                            ),
                             child: Text(
                               "Sign In",
                               style: TextStyle(

@@ -1,14 +1,118 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sih/services/user_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class FloatingProfileButton extends StatelessWidget {
-  final String userName;
+class FloatingProfileButton extends StatefulWidget {
   final String avatarImage;
 
-  const FloatingProfileButton({
-    Key? key,
-    required this.userName,
-    required this.avatarImage,
-  }) : super(key: key);
+  const FloatingProfileButton({Key? key, required this.avatarImage})
+    : super(key: key);
+
+  @override
+  _FloatingProfileButtonState createState() => _FloatingProfileButtonState();
+}
+
+class _FloatingProfileButtonState extends State<FloatingProfileButton> {
+  String userName = 'Loading...'; // Initial value while loading
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  // Async function to load the user name
+  Future<void> _loadUserName() async {
+    String name = await UserService.getUserName();
+    setState(() {
+      userName = name; // Update the UI with the fetched name
+    });
+  }
+
+  Future<bool> _showConfirmationDialog(String title, String content) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              backgroundColor: const Color.fromARGB(255, 40, 39, 39),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      content,
+                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.green),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Text(
+                            'Confirm',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ) ??
+        false;
+  }
 
   void _showProfileSheet(BuildContext context) {
     showModalBottomSheet(
@@ -36,7 +140,6 @@ class FloatingProfileButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Column(
               children: [
-                // Handle bar
                 Container(
                   width: 40,
                   height: 5,
@@ -46,14 +149,13 @@ class FloatingProfileButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
-                // Profile row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ClipOval(
                       child: Image.asset(
-                        avatarImage,
-                        width: 64, // 2 × radius
+                        widget.avatarImage,
+                        width: 64,
                         height: 64,
                         fit: BoxFit.cover,
                       ),
@@ -95,7 +197,6 @@ class FloatingProfileButton extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                // Scrollable options list
                 Expanded(
                   child: ListView.separated(
                     physics: const BouncingScrollPhysics(),
@@ -136,13 +237,21 @@ class FloatingProfileButton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Bottom actions
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Implement sign out logic
+                    onPressed: () async {
+                      bool confirm = await _showConfirmationDialog(
+                        'Sign Out',
+                        'Are you sure you want to sign out?',
+                      );
+
+                      if (confirm) {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushReplacementNamed(context, '/login');
+                      }
                     },
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -187,9 +296,36 @@ class FloatingProfileButton extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 TextButton(
-                  onPressed: () {
-                    // TODO: Implement delete account logic
+                  onPressed: () async {
+                    bool confirm = await _showConfirmationDialog(
+                      'Delete Account',
+                      'Are you sure you want to delete your account? This action cannot be undone.',
+                    );
+
+                    if (confirm) {
+                      User? user = FirebaseAuth.instance.currentUser;
+
+                      if (user != null) {
+                        try {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid)
+                              .delete();
+                          await user.delete();
+                          Navigator.pushReplacementNamed(context, '/login');
+                        } on FirebaseAuthException catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Error: ${e.message ?? 'Unable to delete account'}',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    }
                   },
+
                   child: const Text(
                     "Delete Account",
                     style: TextStyle(
@@ -218,8 +354,8 @@ class FloatingProfileButton extends StatelessWidget {
         onTap: () => _showProfileSheet(context),
         child: ClipOval(
           child: Image.asset(
-            avatarImage,
-            width: 44, // size same as CircleAvatar (2 × radius)
+            widget.avatarImage,
+            width: 44,
             height: 44,
             fit: BoxFit.cover,
           ),
@@ -247,3 +383,5 @@ final List<ProfileOption> _profileOptions = [
   ProfileOption(icon: Icons.support, text: "Support"),
   ProfileOption(icon: Icons.list_alt, text: "App Change Log"),
 ];
+
+// confirmation box

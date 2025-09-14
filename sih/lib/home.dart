@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -11,14 +12,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final MapController _mapController = MapController();
+  List<Polygon> _polygons = [];
   int _selectedBottomIndex = 0;
   LatLng? _currentLatLng;
-  final LatLng _defaultLocation = LatLng(22.7196, 75.8577); // Indore fallback
+  final LatLng _defaultLocation = LatLng(
+    22.726405,
+    75.871887,
+  ); // Indore fallback
 
   @override
   void initState() {
     super.initState();
     _determinePosition();
+    fetchTerritories();
   }
 
   Future<void> _determinePosition() async {
@@ -54,6 +61,73 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> fetchTerritories() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('publicRuns')
+        .get();
+
+    List<Polygon> polygons = [];
+
+    print('Fetched ${querySnapshot.docs.length} documents from publicRuns.');
+
+    for (var doc in querySnapshot.docs) {
+      final data = doc.data();
+      final locationData = data['locationData'] as List<dynamic>;
+      final userId = data['userId'] as String;
+
+      print(
+        'Processing run by user: $userId with ${locationData.length} points.',
+      );
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      final userData = userDoc.data();
+      final userColor = userData != null && userData.containsKey('color')
+          ? userData['color'] as String
+          : '#FF0000';
+
+      List<LatLng> points = locationData.map((point) {
+        final lat = point['lat'] as double;
+        final lng = point['lng'] as double;
+        return LatLng(lat, lng);
+      }).toList();
+
+      if (points.isNotEmpty && points.first != points.last) {
+        points.add(points.first);
+      }
+      if (_polygons.isNotEmpty && _polygons.first.points.isNotEmpty) {
+        final firstPoint = _polygons.first.points.first;
+        _mapController.move(firstPoint, 15); // Zoom level adjustable
+      }
+
+      print('Points for this polygon: $points');
+
+      polygons.add(
+        Polygon(
+          points: points,
+          color: HexColor.fromHex(
+            userColor,
+          ).withOpacity(0.8), // More visible fill
+          borderColor: HexColor.fromHex(userColor),
+          borderStrokeWidth: 2,
+          isFilled: true, // Ensure fill is enabled
+        ),
+      );
+    }
+
+    print('Total polygons created: ${polygons.length}');
+
+    setState(() {
+      _polygons = polygons;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _mapController.move(_mapController.center, _mapController.zoom);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final center = _currentLatLng ?? _defaultLocation;
@@ -77,24 +151,22 @@ class _HomePageState extends State<HomePage> {
             color: Color.fromARGB(255, 99, 227, 82),
           ),
           onPressed: () {
-            // TODO: handle notification tap
+            // Handle notification tap
           },
         ),
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 12),
-            child: FloatingProfileButton(
-              userName: "Harsh Kumar",
-              avatarImage: "assets/avator.png",
-            ),
+            child: FloatingProfileButton(avatarImage: "assets/avator.png"),
           ),
         ],
       ),
 
       body: FlutterMap(
+        mapController: _mapController,
         options: MapOptions(
           initialCenter: center,
-          initialZoom: 13.0,
+          initialZoom: 17.0,
           minZoom: 3,
         ),
         children: [
@@ -103,6 +175,7 @@ class _HomePageState extends State<HomePage> {
             subdomains: const ['a', 'b', 'c'],
             userAgentPackageName: 'your.app.package',
           ),
+          PolygonLayer(polygons: _polygons),
           MarkerLayer(
             markers: [
               Marker(
@@ -148,5 +221,16 @@ class _HomePageState extends State<HomePage> {
         onTap: _onBottomNavSelect,
       ),
     );
+  }
+}
+
+class HexColor extends Color {
+  HexColor(final int hexColor) : super(hexColor);
+
+  static Color fromHex(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
   }
 }

@@ -61,7 +61,7 @@ class _InsightsPageState extends State<InsightsPage> {
           Padding(
             padding: EdgeInsets.only(right: 12),
             child: FloatingProfileButton(
-              userName: "Harsh Kumar",
+              
               avatarImage: "assets/avator.png",
             ),
           ),

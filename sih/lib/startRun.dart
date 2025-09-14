@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:sih/home.dart';
 
 import 'widgets/floating_profile_button.dart';
 
@@ -23,6 +27,7 @@ class _StartRunPageState extends State<StartRunPage> {
   bool _isRunning = false;
   bool _isPaused = false;
 
+  String userColor = '#0000FF'; // Default red if not fetched
   final List<LatLng> _routePoints = [];
   double _totalDistance = 0.0;
   final Distance _distance = const Distance();
@@ -142,9 +147,65 @@ class _StartRunPageState extends State<StartRunPage> {
     _stopwatch.stop();
     _timer?.cancel();
     setState(() {});
+    saveRun();
     // Redirect to /home after finishing
     if (mounted) {
       Navigator.of(context).pushReplacementNamed('/home');
+    }
+  }
+
+  Future<void> saveRun() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final elapsedSeconds = _stopwatch.elapsed.inSeconds;
+    final runPace = _totalDistance > 0
+        ? elapsedSeconds / (_totalDistance / 1000)
+        : 0;
+
+    final runData = {
+      'distance': _totalDistance,
+      'areaCaptured': calculateArea(),
+      'timeTaken': elapsedSeconds,
+      'pace': runPace,
+      'timestamp': FieldValue.serverTimestamp(),
+      'locationData': _routePoints
+          .map((e) => {'lat': e.latitude, 'lng': e.longitude})
+          .toList(),
+      'userId': user.uid,
+      'userName': user.displayName ?? 'Unknown',
+    };
+
+    final runRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('runs')
+        .doc();
+
+    await runRef.set(runData);
+
+    final publicRef = FirebaseFirestore.instance
+        .collection('publicRuns')
+        .doc(runRef.id);
+
+    await publicRef.set(runData);
+  }
+
+  Future<void> fetchUserColor() async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        final data = userDoc.data();
+        setState(() {
+          userColor = data?['color'] ?? '#FF0000';
+        });
+      }
+    } catch (e) {
+      print('Error fetching user color: $e');
     }
   }
 
@@ -185,10 +246,7 @@ class _StartRunPageState extends State<StartRunPage> {
         actions: const [
           Padding(
             padding: EdgeInsets.only(right: 12),
-            child: FloatingProfileButton(
-              userName: "Harsh Kumar",
-              avatarImage: "assets/avator.png",
-            ),
+            child: FloatingProfileButton(avatarImage: "assets/avator.png"),
           ),
         ],
       ),
@@ -211,7 +269,7 @@ class _StartRunPageState extends State<StartRunPage> {
                       polylines: [
                         Polyline(
                           points: _routePoints,
-                          color: Colors.blue,
+                          color: HexColor.fromHex(userColor).withOpacity(0.7),
                           strokeWidth: 4,
                         ),
                       ],
@@ -385,5 +443,32 @@ class _StartRunPageState extends State<StartRunPage> {
         ),
       ),
     );
+  }
+
+  double calculateArea() {
+    if (_routePoints.length < 3) return 0.0; // Need at least 3 points
+
+    double area = 0.0;
+    final int n = _routePoints.length;
+    final double latitude =
+        _routePoints[0].latitude; // Use first point for approximation
+
+    // Helper to convert lat/lng to Cartesian meters
+    double latToY(double lat) => lat * 111320.0;
+    double lngToX(double lng) => lng * 111320.0 * cos(latitude * pi / 180);
+
+    for (int i = 0; i < n; i++) {
+      final p1 = _routePoints[i];
+      final p2 = _routePoints[(i + 1) % n]; // wrap around to first point
+
+      double x1 = lngToX(p1.longitude);
+      double y1 = latToY(p1.latitude);
+      double x2 = lngToX(p2.longitude);
+      double y2 = latToY(p2.latitude);
+
+      area += (x1 * y2) - (x2 * y1);
+    }
+
+    return area.abs() / 2.0; // area in square meters
   }
 }
